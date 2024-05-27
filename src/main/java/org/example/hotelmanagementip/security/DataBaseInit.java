@@ -23,18 +23,20 @@ public class DataBaseInit implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        User admin = new User();
-        admin.setUsername("admin");
-        admin.setPassword(passwordEncoder.encode("admin"));
-        admin.setRole(Role.ADMIN);
+        if (!userRepository.existsByUsername("admin")) {
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPassword(passwordEncoder.encode("admin"));
+            admin.setRole(Role.ADMIN);
+            userRepository.save(admin);
+        }
 
-        User worker = new User();
-        worker.setUsername("worker");
-        worker.setPassword(passwordEncoder.encode("worker"));
-        worker.setRole(Role.WORKER);
-
-        userRepository.save(admin);
-        userRepository.save(worker);
-
+        if (!userRepository.existsByUsername("worker")) {
+            User worker = new User();
+            worker.setUsername("worker");
+            worker.setPassword(passwordEncoder.encode("worker"));
+            worker.setRole(Role.WORKER);
+            userRepository.save(worker);
+        }
     }
 }
