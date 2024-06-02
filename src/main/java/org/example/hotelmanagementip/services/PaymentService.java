@@ -1,6 +1,7 @@
 package org.example.hotelmanagementip.services;
 
 import org.example.hotelmanagementip.dto.PaymentDTO;
+import org.example.hotelmanagementip.strategy.PaymentStrategy;
 
 import java.util.Date;
 import java.util.List;
@@ -31,4 +32,5 @@ public interface PaymentService {
 
     int calculateDuration(Date startDate, Date endDate);
 
+    void processPayment(Long paymentId, PaymentStrategy paymentStrategy);
 }

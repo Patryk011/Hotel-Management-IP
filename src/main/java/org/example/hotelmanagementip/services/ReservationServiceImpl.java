@@ -123,7 +123,11 @@ public class ReservationServiceImpl implements ReservationService {
     public void cancelReservation(Long reservationId) {
         ReservationDTO reservationDTO = findById(reservationId);
         if (reservationDTO != null) {
-            paymentService.deletePayment(reservationDTO.getId());
+
+            List<PaymentDTO> payments = paymentService.findPaymentsByReservationId(reservationId);
+            for (PaymentDTO payment : payments) {
+                paymentService.deletePayment(payment.getId());
+            }
             reservationRepository.deleteById(reservationId);
         } else {
             throw new ReservationException("Reservation with ID " + reservationId + " not found.");

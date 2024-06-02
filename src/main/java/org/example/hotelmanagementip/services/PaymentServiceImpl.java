@@ -9,6 +9,11 @@ import org.example.hotelmanagementip.exception.ReservationException;
 import org.example.hotelmanagementip.mapper.PaymentMapper;
 import org.example.hotelmanagementip.repository.PaymentRepository;
 import org.example.hotelmanagementip.repository.ReservationRepository;
+import org.example.hotelmanagementip.strategy.CreditCardPaymentStrategy;
+import org.example.hotelmanagementip.strategy.PayPalPaymentStrategy;
+import org.example.hotelmanagementip.strategy.PaymentContext;
+import org.example.hotelmanagementip.strategy.PaymentStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -18,22 +23,23 @@ import java.util.NoSuchElementException;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
-
     private final PaymentRepository paymentRepository;
     private final RoomService roomService;
-
     private final ReservationRepository reservationRepository;
-
     private final ReservationService reservationService;
     private final PaymentMapper paymentMapper;
+    private final PaymentContext paymentContext;
 
-    @Lazy
-    public PaymentServiceImpl(PaymentRepository paymentRepository, RoomService roomService, ReservationRepository reservationRepository, ReservationService reservationService, PaymentMapper paymentMapper) {
+    @Autowired
+    public PaymentServiceImpl(PaymentRepository paymentRepository, RoomService roomService,
+                              ReservationRepository reservationRepository, @Lazy ReservationService reservationService,
+                              PaymentMapper paymentMapper, PaymentContext paymentContext) {
         this.paymentRepository = paymentRepository;
         this.roomService = roomService;
         this.reservationRepository = reservationRepository;
         this.reservationService = reservationService;
         this.paymentMapper = paymentMapper;
+        this.paymentContext = paymentContext;
     }
 
     @Override
@@ -59,9 +65,6 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.deleteById(id);
     }
 
-
-
-
     @Override
     public PaymentDTO updatePayment(Long reservationId, Long newRoomId, Date newStartDate, Date newEndDate) {
         ReservationDTO reservationDTO = reservationService.findById(reservationId);
@@ -76,7 +79,6 @@ public class PaymentServiceImpl implements PaymentService {
 
 
         if (!payment.getReservation().getRoom().getId().equals(newRoomId)) {
-
             newAmount = roomService.getRoomPrice(newRoomId) * calculateDuration(newStartDate, newEndDate);
         }
 
@@ -85,7 +87,6 @@ public class PaymentServiceImpl implements PaymentService {
 
         return paymentMapper.mapToDTO(payment);
     }
-
 
     @Override
     public PaymentDTO markPaymentAsPaid(Long paymentId) {
@@ -103,7 +104,6 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.mapToDTO(payment);
     }
 
-
     @Override
     public PaymentDTO markPaymentAsUnPaid(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
@@ -119,8 +119,6 @@ public class PaymentServiceImpl implements PaymentService {
 
         return paymentMapper.mapToDTO(payment);
     }
-
-
 
     @Override
     public int calculateDuration(Date startDate, Date endDate) {
@@ -146,4 +144,30 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.mapToDTO(payment);
     }
 
+    @Override
+    public void processPayment(Long paymentId, PaymentStrategy paymentStrategy) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new PaymentException("Payment with ID " + paymentId + " not found."));
+
+        if (paymentStrategy instanceof CreditCardPaymentStrategy) {
+            ((CreditCardPaymentStrategy) paymentStrategy).setPaymentId(paymentId);
+        } else if (paymentStrategy instanceof PayPalPaymentStrategy) {
+            ((PayPalPaymentStrategy) paymentStrategy).setPaymentId(paymentId);
+        }
+
+        paymentContext.setPaymentStrategy(paymentStrategy);
+        paymentContext.executePayment(payment.getAmount());
+
+        payment.setPaid(true);
+        payment.setStatus("Confirmed");
+        paymentRepository.save(payment);
+
+        Reservation reservation = payment.getReservation();
+        if (reservation != null) {
+            reservation.setStatus("Paid");
+            reservationRepository.save(reservation);
+        } else {
+            throw new PaymentException("Associated reservation not found for payment ID: " + paymentId);
+        }
+    }
 }
