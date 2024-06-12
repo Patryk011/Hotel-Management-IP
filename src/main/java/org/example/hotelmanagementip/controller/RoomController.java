@@ -35,7 +35,10 @@ public class RoomController {
         return roomService.getById(id);
     }
 
-
+    @PutMapping("/{id}/toggleClean")
+    public RoomDTO toggleCleanStatus(@PathVariable Long id) {
+        return roomService.toggleCleanStatus(id);
+    }
 
     @PutMapping("/{id}")
     public RoomDTO updateRoom(@PathVariable Long id, @RequestBody RoomDTO roomDTO) {
@@ -51,5 +54,9 @@ public class RoomController {
     public void deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
     }
+
+
+
+
 
 }

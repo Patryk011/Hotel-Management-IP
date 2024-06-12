@@ -30,5 +30,8 @@ public interface RoomService {
 
     void deleteRoom(Long id);
 
+    RoomDTO toggleCleanStatus(Long id);
+
+
 }
 

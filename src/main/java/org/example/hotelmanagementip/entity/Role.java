@@ -2,5 +2,6 @@ package org.example.hotelmanagementip.entity;
 
 public enum Role {
 
-    ADMIN, WORKER
+    ADMIN, WORKER, RECEPTIONIST,
+    CLEANER
 }

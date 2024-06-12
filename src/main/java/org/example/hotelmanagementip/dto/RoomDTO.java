@@ -19,4 +19,5 @@ public class RoomDTO {
     private double price;
 
     private boolean isFree;
+    private boolean isClean;
 }

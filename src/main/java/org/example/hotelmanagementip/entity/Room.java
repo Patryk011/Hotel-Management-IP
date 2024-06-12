@@ -32,4 +32,8 @@ public class Room {
 
     @Column(name = "isFree")
     private boolean isFree;
+
+    @Column(name = "isClean")
+    private boolean isClean;
+
 }

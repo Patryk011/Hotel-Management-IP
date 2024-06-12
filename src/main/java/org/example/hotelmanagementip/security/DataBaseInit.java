@@ -1,7 +1,5 @@
 package org.example.hotelmanagementip.security;
 
-
-
 import org.example.hotelmanagementip.entity.Role;
 import org.example.hotelmanagementip.entity.User;
 import org.example.hotelmanagementip.repository.UserRepository;
@@ -10,10 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class DataBaseInit implements CommandLineRunner {
-
 
     @Autowired
     private UserRepository userRepository;
@@ -38,5 +34,21 @@ public class DataBaseInit implements CommandLineRunner {
             worker.setRole(Role.WORKER);
             userRepository.save(worker);
         }
+
+//        if (!userRepository.existsByUsername("receptionist")) {
+//            User receptionist = new User();
+//            receptionist.setUsername("receptionist");
+//            receptionist.setPassword(passwordEncoder.encode("receptionist"));
+//            receptionist.setRole(Role.RECEPTIONIST);
+//            userRepository.save(receptionist);
+//        }
+//
+//        if (!userRepository.existsByUsername("cleaner")) {
+//            User cleaner = new User();
+//            cleaner.setUsername("cleaner");
+//            cleaner.setPassword(passwordEncoder.encode("cleaner"));
+//            cleaner.setRole(Role.CLEANER);
+//            userRepository.save(cleaner);
+//        }
     }
 }

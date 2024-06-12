@@ -59,6 +59,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         Room room = roomFactory.createRoom(roomDTO.getType(), roomDTO.getHotelId(), roomDTO.getNumber(), roomDTO.getPrice());
+
         room = roomRepository.save(room);
 
         return roomMapper.mapToDto(room);
@@ -70,6 +71,7 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new RoomException("Room with ID " + id + " not found."));
 
         existingRoom = roomMapper.mapFromDto(existingRoom, roomDTO);
+
         roomRepository.save(existingRoom);
         return roomMapper.mapToDto(existingRoom);
     }
@@ -84,4 +86,16 @@ public class RoomServiceImpl implements RoomService {
     public void deleteRoom(Long id) {
         roomRepository.deleteById(id);
     }
+
+    @Override
+    public RoomDTO toggleCleanStatus(Long id) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new RoomException("Room with ID " + id + " not found."));
+        room.setClean(!room.isClean());
+        roomRepository.save(room);
+        return roomMapper.mapToDto(room);
+    }
+
+
+
 }
