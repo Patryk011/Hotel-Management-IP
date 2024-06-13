@@ -10,9 +10,6 @@ import org.example.hotelmanagementip.repository.CustomerRepository;
 import org.example.hotelmanagementip.repository.HotelRepository;
 import org.example.hotelmanagementip.repository.ReservationRepository;
 import org.example.hotelmanagementip.repository.RoomRepository;
-import org.example.hotelmanagementip.services.PaymentService;
-import org.example.hotelmanagementip.services.ReservationService;
-import org.example.hotelmanagementip.services.ReservationServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -27,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReservationServiceTest {
+public class ReservationServiceCreateReservationTest {
 
     private ReservationService reservationService;
 
@@ -89,9 +86,6 @@ public class ReservationServiceTest {
     }
 
     private Reservation createReservation() {
-        Room room = new Room();
-        room.setId(1L);
-
         Reservation reservation = new Reservation();
         reservation.setId(1L);
         return reservation;
