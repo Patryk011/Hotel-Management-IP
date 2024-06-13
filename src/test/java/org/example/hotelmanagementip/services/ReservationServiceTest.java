@@ -1,4 +1,4 @@
-package org.example.hotelmanagementip.service;
+package org.example.hotelmanagementip.services;
 
 import org.example.hotelmanagementip.dto.PaymentDTO;
 import org.example.hotelmanagementip.dto.ReservationDTO;
