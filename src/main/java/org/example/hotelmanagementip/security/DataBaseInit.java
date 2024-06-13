@@ -35,20 +35,20 @@ public class DataBaseInit implements CommandLineRunner {
             userRepository.save(worker);
         }
 
-//        if (!userRepository.existsByUsername("receptionist")) {
-//            User receptionist = new User();
-//            receptionist.setUsername("receptionist");
-//            receptionist.setPassword(passwordEncoder.encode("receptionist"));
-//            receptionist.setRole(Role.RECEPTIONIST);
-//            userRepository.save(receptionist);
-//        }
-//
-//        if (!userRepository.existsByUsername("cleaner")) {
-//            User cleaner = new User();
-//            cleaner.setUsername("cleaner");
-//            cleaner.setPassword(passwordEncoder.encode("cleaner"));
-//            cleaner.setRole(Role.CLEANER);
-//            userRepository.save(cleaner);
-//        }
+        if (!userRepository.existsByUsername("receptionist")) {
+            User receptionist = new User();
+            receptionist.setUsername("receptionist");
+            receptionist.setPassword(passwordEncoder.encode("receptionist"));
+            receptionist.setRole(Role.RECEPTIONIST);
+            userRepository.save(receptionist);
+        }
+
+        if (!userRepository.existsByUsername("cleaner")) {
+            User cleaner = new User();
+            cleaner.setUsername("cleaner");
+            cleaner.setPassword(passwordEncoder.encode("cleaner"));
+            cleaner.setRole(Role.CLEANER);
+            userRepository.save(cleaner);
+        }
     }
 }
