@@ -72,11 +72,10 @@ public class PaymentServiceImpl implements PaymentService {
             throw new ReservationException("Reservation with ID " + reservationId + " not found.");
         }
 
-        double newAmount = roomService.getRoomPrice(newRoomId) * calculateDuration(newStartDate, newEndDate);
-
         Payment payment = paymentRepository.findById(reservationId)
                 .orElseThrow(() -> new PaymentException("Payment for Reservation with ID " + reservationId + " not found."));
 
+        double newAmount = roomService.getRoomPrice(newRoomId) * calculateDuration(newStartDate, newEndDate);
 
         if (!payment.getReservation().getRoom().getId().equals(newRoomId)) {
             newAmount = roomService.getRoomPrice(newRoomId) * calculateDuration(newStartDate, newEndDate);
