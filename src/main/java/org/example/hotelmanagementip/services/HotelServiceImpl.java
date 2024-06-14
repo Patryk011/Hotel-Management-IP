@@ -14,10 +14,7 @@ import java.util.NoSuchElementException;
 @Service
 public class HotelServiceImpl implements HotelService {
 
-
-
     private final HotelRepository hotelRepository;
-
     private final HotelMapper hotelMapper;
 
     @Autowired
@@ -25,7 +22,6 @@ public class HotelServiceImpl implements HotelService {
         this.hotelRepository = hotelRepository;
         this.hotelMapper = hotelMapper;
     }
-
 
     @Override
     public List<HotelDTO> getAllHotels() {
@@ -40,8 +36,11 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public HotelDTO saveHotel(HotelDTO hotelDTO) {
+        Hotel hotel = Hotel.builder()
+                .setName(hotelDTO.getName())
+                .setAddress(hotelDTO.getAddress())
+                .build();
 
-        Hotel hotel = hotelMapper.mapFromDTO(hotelDTO);
         hotel = hotelRepository.save(hotel);
         return hotelMapper.mapToDTO(hotel);
     }
@@ -56,7 +55,13 @@ public class HotelServiceImpl implements HotelService {
         Hotel existingHotel = hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new HotelException("Hotel with ID " + hotelId + " not found."));
 
-        existingHotel = hotelMapper.mapFromDTO(existingHotel, hotelDTO);
+        existingHotel = Hotel.builder()
+                .setId(existingHotel.getId())
+                .setName(hotelDTO.getName())
+                .setAddress(hotelDTO.getAddress())
+                .setRooms(existingHotel.getRooms())
+                .build();
+
         hotelRepository.save(existingHotel);
         return hotelMapper.mapToDTO(existingHotel);
     }
