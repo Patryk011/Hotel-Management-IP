@@ -36,6 +36,28 @@ class HotelServiceImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+
+    @Test
+    void saveHotel() {
+        HotelDTO hotelDTO = new HotelDTO();
+        hotelDTO.setName("Test Hotel");
+        hotelDTO.setAddress("Test Address");
+
+        Hotel hotel = Hotel.builder()
+                .setName("Test Hotel")
+                .setAddress("Test Address")
+                .build();
+
+        when(hotelRepository.save(any(Hotel.class))).thenReturn(hotel);
+        when(hotelMapper.mapToDTO(any(Hotel.class))).thenReturn(hotelDTO);
+
+        HotelDTO savedHotel = hotelService.saveHotel(hotelDTO);
+
+
+        assertEquals("Test Hotel", savedHotel.getName());
+        assertEquals("Test Address", savedHotel.getAddress());
+    }
+
     @Test
     void testGetAllHotels() {
         List<Hotel> hotels = Arrays.asList(
@@ -111,5 +133,47 @@ class HotelServiceImplTest {
         verify(hotelMapper, never()).mapFromDTO(any(), any());
         verify(hotelRepository, never()).save(any());
         verify(hotelMapper, never()).mapToDTO(any());
+    }
+
+    @Test
+    void updateHotel() {
+        Long hotelId = 1L;
+        HotelDTO hotelDTO = new HotelDTO();
+        hotelDTO.setName("Updated Hotel");
+        hotelDTO.setAddress("Updated Address");
+
+        Hotel existingHotel = Hotel.builder()
+                .setId(hotelId)
+                .setName("Existing Hotel")
+                .setAddress("Existing Address")
+                .build();
+
+        Hotel updatedHotel = Hotel.builder()
+                .setId(hotelId)
+                .setName("Updated Hotel")
+                .setAddress("Updated Address")
+                .build();
+
+        when(hotelRepository.findById(anyLong())).thenReturn(Optional.of(existingHotel));
+        when(hotelRepository.save(any(Hotel.class))).thenReturn(updatedHotel);
+        when(hotelMapper.mapToDTO(any(Hotel.class))).thenReturn(hotelDTO);
+
+        HotelDTO result = hotelService.updateHotel(hotelId, hotelDTO);
+
+
+        assertEquals("Updated Hotel", result.getName());
+        assertEquals("Updated Address", result.getAddress());
+    }
+
+    @Test
+    void updateHotel_NotFound() {
+        Long hotelId = 1L;
+        HotelDTO hotelDTO = new HotelDTO();
+
+        when(hotelRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(HotelException.class, () -> {
+            hotelService.updateHotel(hotelId, hotelDTO);
+        });
     }
 }
